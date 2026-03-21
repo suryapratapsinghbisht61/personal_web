@@ -1,88 +1,131 @@
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { motion } from 'framer-motion';
-import * as THREE from 'three';
+import { motion as Motion, useScroll, useTransform } from 'framer-motion';
 
-// Prepare environment for scroll-based animations by registering ScrollTrigger
-gsap.registerPlugin(ScrollTrigger);
+// SVG Icons
+const GithubIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.02c3.14-.35 6.5-1.4 6.5-7.1a5.8 5.8 0 0 0-1.6-4.03 5.4 5.4 0 0 0-.15-4.01s-1.3-.4-4.2 1.6a14.8 14.8 0 0 0-8 0c-2.9-2-4.2-1.6-4.2-1.6a5.4 5.4 0 0 0-.15 4.01 5.8 5.8 0 0 0-1.6 4.03c0 5.7 3.36 6.75 6.5 7.1a4.8 4.8 0 0 0-1 3.02v4"></path>
+  </svg>
+);
+
+const LinkedinIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+    <rect x="2" y="9" width="4" height="12"></rect>
+    <circle cx="4" cy="4" r="2"></circle>
+  </svg>
+);
+
+const ArrowDownIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
+    <path d="M12 5v14"></path>
+    <path d="m19 12-7 7-7-7"></path>
+  </svg>
+);
 
 function App() {
-  const mountRef = useRef(null);
-
-  useEffect(() => {
-    // Basic Three.js setup to verify it works (Test Scene)
-    const scene = new THREE.Scene();
-    // Using a fixed small resolution for the test scene instead of full screen
-    const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
-    
-    // Set size to match container
-    renderer.setSize(300, 300);
-    if (mountRef.current) {
-      mountRef.current.appendChild(renderer.domElement);
-    }
-
-    // Add a simple wireframe cube
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x10b981, wireframe: true });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    camera.position.z = 2.5;
-
-    let animationFrameId;
-
-    const animate = () => {
-      animationFrameId = requestAnimationFrame(animate);
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // Cleanup phase
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      if (mountRef.current && renderer.domElement && mountRef.current.contains(renderer.domElement)) {
-        mountRef.current.removeChild(renderer.domElement);
-      }
-      geometry.dispose();
-      material.dispose();
-      renderer.dispose();
-    };
-  }, []);
+  const { scrollY } = useScroll();
+  
+  // Transform values for scroll effect
+  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
+  const y = useTransform(scrollY, [0, 300], [0, -50]);
 
   return (
-    <div className="min-h-screen bg-neutral-900 text-white flex flex-col items-center justify-center pt-10 pb-20">
-      {/* 
-        Temporary Test page to confirm all libraries are working.
-        Development of the actual UI, design, and sections will happen later.
-      */}
+    <div className="min-h-[200vh] bg-black text-white selection:bg-purple-500/30 overflow-hidden font-sans">
       
-      {/* Test Framer Motion */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="mb-8 text-center"
+      {/* Background Effect: Subtle purple gradient blob */}
+      <Motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2 }}
+        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
       >
-        <h1 className="text-3xl font-bold text-emerald-400 mb-2">Environment Preparation Complete</h1>
-        <p className="text-neutral-400">React + Tailwind v4 + GSAP + Framer Motion + Three.js</p>
-      </motion.div>
+        <div className="w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[120px]" />
+      </Motion.div>
 
-      {/* Test Three.js Scene */}
-      <div className="mt-6 flex flex-col items-center">
-        <p className="text-sm text-neutral-500 mb-4 tracking-wide uppercase">Three.js Test Scene</p>
-        <div 
-          ref={mountRef} 
-          className="w-[300px] h-[300px] border border-neutral-700/50 rounded-xl bg-neutral-800 shadow-xl overflow-hidden"
-        />
-      </div>
-      
+      {/* Hero Content */}
+      <Motion.main 
+        style={{ opacity, y }}
+        className="relative z-10 h-screen w-full flex flex-col items-center justify-center px-6"
+      >
+        <Motion.div
+          animate={{ y: [-4, 4, -4] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="flex flex-col items-center justify-center text-center max-w-4xl"
+        >
+          {/* Heading */}
+          <Motion.h1 
+            initial={{ opacity: 0, y: 40, filter: "blur(12px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white mb-6"
+          >
+            Surya Pratap Singh
+          </Motion.h1>
+
+          {/* Subheading */}
+          <Motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
+            className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-light tracking-wide mb-12"
+          >
+            BCA AI/ML Student <span className="text-neutral-600 mx-2">|</span> Building AI Systems & Future Tech
+          </Motion.p>
+
+          {/* Buttons */}
+          <Motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 1.2, ease: "easeOut" }}
+            className="flex flex-wrap items-center justify-center gap-6"
+          >
+            <Motion.a 
+              href="https://github.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(168,85,247,0.15)", backgroundColor: "rgba(255,255,255,0.1)" }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3.5 rounded-full bg-white/5 border border-white/10 text-white font-medium transition-colors flex items-center gap-3 backdrop-blur-md"
+            >
+              <GithubIcon />
+              <span>GitHub</span>
+            </Motion.a>
+            <Motion.a 
+              href="https://linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(168,85,247,0.15)", backgroundColor: "rgba(255,255,255,0.1)" }}
+              whileTap={{ scale: 0.95 }}
+              className="px-8 py-3.5 rounded-full bg-white/5 border border-white/10 text-white font-medium transition-colors flex items-center gap-3 backdrop-blur-md"
+            >
+              <LinkedinIcon />
+              <span>LinkedIn</span>
+            </Motion.a>
+          </Motion.div>
+        </Motion.div>
+
+        {/* Scroll Indicator */}
+        <Motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 2.2 }}
+          className="absolute bottom-12 flex flex-col items-center gap-3"
+        >
+          <div className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Scroll</div>
+          <Motion.div 
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="flex flex-col items-center"
+          >
+            <div className="w-[1px] h-12 bg-gradient-to-b from-purple-500/50 to-transparent mb-2" />
+            <ArrowDownIcon />
+          </Motion.div>
+        </Motion.div>
+      </Motion.main>
+
     </div>
   );
 }
 
 export default App;
+
