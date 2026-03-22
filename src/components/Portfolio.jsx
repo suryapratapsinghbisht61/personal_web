@@ -47,13 +47,9 @@ const projects = [
 export default function Portfolio() {
   const [activeId, setActiveId] = useState(3); // Default to middle item
   
-  // Find the active project to determine the background color
-  const activeProject = projects.find(p => p.id === activeId) || projects[0];
-
   return (
     <Motion.section 
-      className="w-full min-h-screen py-24 flex flex-col items-center justify-center relative transition-colors duration-1000 ease-in-out"
-      style={{ backgroundColor: activeProject.bgColor }}
+      className="w-full bg-black min-h-screen py-16 flex flex-col items-center justify-center relative transition-colors duration-1000 ease-in-out"
     >
       <div className="max-w-7xl mx-auto w-full px-6 flex flex-col items-center z-10">
         
@@ -62,9 +58,9 @@ export default function Portfolio() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="mb-16 text-center"
+          className="mb-12 text-center"
         >
-          <h2 className="text-4xl md:text-5xl font-bold tracking-tighter text-white mb-4">
+          <h2 className="text-5xl md:text-6xl font-bold tracking-tighter text-white mb-4">
             Selected Works
           </h2>
           <p className="text-white/60 text-lg max-w-xl mx-auto font-light">
@@ -84,6 +80,12 @@ export default function Portfolio() {
                 role="button"
                 aria-expanded={isActive}
                 tabIndex={0}
+                onHoverStart={() => {
+                  // Only expand on hover for devices with a mouse
+                  if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+                    setActiveId(project.id);
+                  }
+                }}
                 onClick={() => setActiveId(project.id)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
