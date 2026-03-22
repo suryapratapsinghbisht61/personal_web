@@ -73,7 +73,7 @@ export default function Portfolio() {
         </Motion.div>
 
         {/* Accordion Container */}
-        <div className="flex flex-row w-full h-[60vh] md:h-[70vh] gap-2 md:gap-4 overflow-hidden">
+        <div className="flex flex-col md:flex-row w-full h-[80vh] md:h-[70vh] gap-3 overflow-hidden">
           {projects.map((project) => {
             const isActive = activeId === project.id;
             
@@ -81,8 +81,16 @@ export default function Portfolio() {
               <Motion.div
                 key={project.id}
                 layout
-                onHoverStart={() => setActiveId(project.id)}
+                role="button"
+                aria-expanded={isActive}
+                tabIndex={0}
                 onClick={() => setActiveId(project.id)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    setActiveId(project.id);
+                  }
+                }}
                 initial={{ borderRadius: '1rem' }}
                 animate={{ 
                   flex: isActive ? 4 : 1,
@@ -94,23 +102,23 @@ export default function Portfolio() {
                   backgroundColor: { duration: 0.5 },
                   opacity: { duration: 0.3 }
                 }}
-                className={`relative cursor-pointer overflow-hidden backdrop-blur-sm border border-white/10 flex flex-col items-center justify-between py-8 px-4`}
+                className={`relative overflow-hidden backdrop-blur-sm border border-white/20 flex flex-col items-center justify-between py-6 md:py-8 px-4 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/50 cursor-pointer`}
               >
                 {/* Top Number */}
-                <span className="text-white/40 font-mono text-xl md:text-2xl font-bold w-full text-center">
+                <span className="text-white/80 font-mono text-xl md:text-2xl font-bold w-full text-center md:text-left drop-shadow-md">
                   0{project.id}
                 </span>
 
-                {/* Vertical Text when inactive */}
+                {/* Vertical/Horizontal Text when inactive */}
                 {!isActive && (
                   <Motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                    className="absolute inset-0 flex items-center justify-center pointer-events-none p-4"
                   >
-                    <h3 className="text-white font-medium text-xl md:text-3xl tracking-widest whitespace-nowrap transform -rotate-90">
+                    <h3 className="text-white font-medium text-lg md:text-3xl tracking-widest whitespace-nowrap md:transform md:-rotate-90 drop-shadow-md">
                       {project.title}
                     </h3>
                   </Motion.div>

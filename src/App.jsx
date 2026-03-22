@@ -25,50 +25,53 @@ const ArrowDownIcon = () => (
   </svg>
 );
 
-// Cursor Trail Component
+// Cursor Trail Component - Optimized with zero React re-renders
 const CursorTrail = () => {
   useEffect(() => {
-    const container = document.getElementById('cursor-trail-container');
-    if (!container) return;
+    let animationFrameId;
+    let targetX = -100;
+    let targetY = -100;
+    let currentX = -100;
+    let currentY = -100;
+    
+    // Performance: avoiding React state allows us to track mouse position smoothly without VDOM diffing overhead
+    const cursor = document.getElementById("optimized-cursor");
+    if (!cursor) return;
 
-    let timeoutIds = [];
-
-    const handleMouseMove = (e) => {
-      const dot = document.createElement('div');
-      dot.className = 'absolute w-2 h-2 bg-purple-400 rounded-full pointer-events-none transform -translate-x-1/2 -translate-y-1/2';
-      dot.style.left = `${e.clientX}px`;
-      dot.style.top = `${e.clientY}px`;
-      dot.style.opacity = '0.3';
-      dot.style.transform = 'scale(1)';
-      dot.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
-      
-      container.appendChild(dot);
-
-      // Trigger animation next frame
-      requestAnimationFrame(() => {
-        dot.style.opacity = '0';
-        dot.style.transform = 'scale(0.2)';
-      });
-
-      // Remove after transition
-      const timeoutId = setTimeout(() => {
-        if (container.contains(dot)) {
-          container.removeChild(dot);
-        }
-      }, 800);
-
-      timeoutIds.push(timeoutId);
+    const onMouseMove = (e) => {
+      targetX = e.clientX;
+      targetY = e.clientY;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    const updateCursor = () => {
+      // Smooth scaling interpolation (LERP)
+      currentX += (targetX - currentX) * 0.2;
+      currentY += (targetY - currentY) * 0.2;
+      
+      // Hardware accelerated transform
+      cursor.style.transform = `translate3d(${currentX - 8}px, ${currentY - 8}px, 0)`;
+      
+      animationFrameId = requestAnimationFrame(updateCursor);
+    };
+
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+    // Start loop
+    updateCursor();
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      timeoutIds.forEach(clearTimeout);
+      window.removeEventListener('mousemove', onMouseMove);
+      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
-  return <div id="cursor-trail-container" className="fixed inset-0 pointer-events-none z-50 overflow-hidden" />;
+  return (
+    <div 
+      id="optimized-cursor" 
+      className="fixed top-0 left-0 w-4 h-4 rounded-full bg-purple-400 pointer-events-none z-50 opacity-70 transition-opacity duration-300"
+      style={{ willChange: "transform" }}
+      aria-hidden="true"
+    />
+  );
 };
 
 // Simple static heading component instead of scroll scrub
@@ -89,6 +92,7 @@ const InfiniteMarquee = () => {
       <Motion.div 
         animate={{ x: ["0%", "-50%"] }} 
         transition={{ ease: "linear", duration: 15, repeat: Infinity }}
+        style={{ willChange: "transform" }}
         className="flex whitespace-nowrap gap-12 text-2xl md:text-3xl font-black text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)] uppercase tracking-widest w-fit"
       >
         <span>FULL STACK DEVELOPER</span>
@@ -225,4 +229,3 @@ function App() {
 }
 
 export default App;
-
