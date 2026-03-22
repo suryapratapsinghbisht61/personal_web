@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
-import { motion as Motion, useScroll, useTransform } from 'framer-motion';
+import { motion as Motion } from 'framer-motion';
+import Skills from './components/Skills';
+import Portfolio from './components/Portfolio';
 
 // SVG Icons
 const GithubIcon = () => (
@@ -69,51 +71,56 @@ const CursorTrail = () => {
   return <div id="cursor-trail-container" className="fixed inset-0 pointer-events-none z-50 overflow-hidden" />;
 };
 
-// Scroll Scrubbed Text Reveal Component
-const ScrollScrubHeading = ({ text }) => {
-  const { scrollY } = useScroll();
-  const chars = text.split('');
-
+// Simple static heading component instead of scroll scrub
+const StaticHeading = ({ text }) => {
   return (
-    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white mb-6 flex justify-center flex-wrap">
-      {chars.map((char, index) => {
-        // Map scroll range for each character to create a sequential reveal
-        // Adjust these values to control scrub speed
-        const start = index * 20; 
-        const end = start + 100;
-        
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const opacity = useTransform(scrollY, [start, end], [0.1, 1]);
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const y = useTransform(scrollY, [start, end], [30, 0]);
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const filterBlur = useTransform(scrollY, [start, end], [12, 0]);
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        const filter = useTransform(filterBlur, (v) => `blur(${v}px)`);
-
-        return (
-          <Motion.span 
-            key={index}
-            style={{ opacity, y, filter }}
-            className={char === ' ' ? 'w-4 md:w-8' : 'inline-block'}
-          >
-            {char}
-          </Motion.span>
-        );
-      })}
+    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white mb-6 flex justify-center flex-wrap gap-x-2 md:gap-x-4">
+      {text.split(' ').map((word, i) => (
+        <span key={i}>{word}</span>
+      ))}
     </h1>
   );
 };
 
+// Infinite Horizontal Marquee
+const InfiniteMarquee = () => {
+  return (
+    <div className="relative w-full overflow-hidden flex items-center bg-transparent py-4 border-y border-white/5 z-20">
+      <Motion.div 
+        animate={{ x: ["0%", "-50%"] }} 
+        transition={{ ease: "linear", duration: 15, repeat: Infinity }}
+        className="flex whitespace-nowrap gap-12 text-2xl md:text-3xl font-black text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.3)] uppercase tracking-widest w-fit"
+      >
+        <span>FULL STACK DEVELOPER</span>
+        <span>•</span>
+        <span>AI/ML ENTHUSIAST</span>
+        <span>•</span>
+        <span>AGENTIC AI</span>
+        <span>•</span>
+        <span>CREATIVE ENGINEER</span>
+        <span>•</span>
+        <span>REACT & DJANGO</span>
+        <span>•</span>
+        <span>FULL STACK DEVELOPER</span>
+        <span>•</span>
+        <span>AI/ML ENTHUSIAST</span>
+        <span>•</span>
+        <span>AGENTIC AI</span>
+        <span>•</span>
+        <span>CREATIVE ENGINEER</span>
+        <span>•</span>
+        <span>REACT & DJANGO</span>
+        <span>•</span>
+      </Motion.div>
+    </div>
+  );
+};
+
 function App() {
-  const { scrollY } = useScroll();
-  
-  // Overall hero section fade out happens later, after heading reveals text
-  const heroOpacity = useTransform(scrollY, [500, 800], [1, 0]);
-  const heroY = useTransform(scrollY, [500, 800], [0, -80]);
+  // We no longer need the global hero opacity scroll transform
 
   return (
-    <div className="min-h-[250vh] bg-black text-white selection:bg-purple-500/30 font-sans">
+    <div className="bg-black text-white selection:bg-purple-500/30 font-sans">
       
       <CursorTrail />
 
@@ -127,11 +134,13 @@ function App() {
         <div className="w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[120px]" />
       </Motion.div>
 
-      {/* Hero Content container */}
-      <div className="sticky top-0 h-screen w-full flex flex-col items-center justify-center px-6 overflow-hidden">
-        
-        <Motion.main 
-          style={{ opacity: heroOpacity, y: heroY }}
+      {/* Hero Content Area - Removed h-[250vh] and sticky logic to stop the black gap */}
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 overflow-hidden">
+          
+          <Motion.main 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
           className="relative z-10 flex flex-col items-center justify-center w-full"
         >
           <Motion.div
@@ -139,8 +148,8 @@ function App() {
             transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
             className="flex flex-col items-center justify-center text-center max-w-4xl w-full"
           >
-            {/* Scroll-scrubbed Heading */}
-            <ScrollScrubHeading text="Surya Pratap Singh" />
+            {/* Static Heading */}
+            <StaticHeading text="Surya Pratap Singh" />
 
             {/* Subheading */}
             <Motion.p 
@@ -204,9 +213,16 @@ function App() {
         </Motion.main>
 
       </div>
+      
+      {/* Infinite Horizontal Marquee */}
+      <InfiniteMarquee />
+
+      <Skills />
+      
+      <Portfolio />
     </div>
   );
 }
 
-export default App;;
+export default App;
 
