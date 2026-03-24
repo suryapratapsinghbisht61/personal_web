@@ -92,18 +92,18 @@ const UltraHeroHeading = () => {
       initial={{ scale: 0.92 }}
       animate={{ scale: 1.04 }}
       transition={{ duration: 2.5, ease: "easeOut" }}
-      className="relative flex items-center justify-center font-black uppercase tracking-[0.1em] mb-6 w-full"
-      style={{ fontSize: "clamp(56px, 8vw, 110px)", fontWeight: 900, height: "1.2em" }}
+      className="relative flex items-center justify-center font-black uppercase tracking-[0.05em] sm:tracking-[0.1em] mb-6 w-full text-center"
+      style={{ fontSize: "clamp(42px, 12vw, 110px)", fontWeight: 900, lineHeight: "1.1" }}
     >
-      {/* Bottom Layer: Hollow Outline */}
+      {/* Bottom Layer: Hollow Outline (In regular document flow so container resizes if it stacks logically on mobile) */}
       <div 
-        className="absolute inset-0 flex items-center justify-center text-transparent whitespace-nowrap"
-        style={{ WebkitTextStroke: "1.5px rgba(255,255,255,0.18)" }}
+        className="text-transparent px-4 whitespace-normal sm:whitespace-nowrap z-0"
+        style={{ WebkitTextStroke: "1px rgba(255,255,255,0.18)" }}
       >
         SURYA PRATAP
       </div>
       
-      {/* Top Layer: Fill Wipe (animates inset from right to left, and color grey -> white) */}
+      {/* Top Layer: Fill Wipe (Overlaps perfectly as absolute overlay) */}
       <Motion.div 
         initial={{ clipPath: "inset(0 100% 0 0)", color: "#666666" }}
         animate={{ clipPath: "inset(0 0% 0 0)", color: "#ffffff" }}
@@ -111,7 +111,7 @@ const UltraHeroHeading = () => {
           clipPath: { duration: 1, delay: 0.9, ease: [0.76, 0, 0.24, 1] },
           color: { duration: 1, delay: 1.9, ease: "easeOut" }
         }}
-        className="absolute inset-0 z-10 flex items-center justify-center select-none whitespace-nowrap"
+        className="absolute inset-0 z-10 flex items-center justify-center select-none px-4 whitespace-normal sm:whitespace-nowrap pointer-events-none"
       >
         SURYA PRATAP
       </Motion.div>
@@ -200,6 +200,19 @@ const InfiniteMarquee = () => {
     </div>
   );
 };
+// Navbar
+const Navbar = () => (
+  <nav className="absolute top-6 sm:top-10 left-0 w-full flex justify-center z-50 px-4">
+    <div className="flex flex-wrap justify-center gap-6 sm:gap-10 md:gap-14 text-[10px] sm:text-xs md:text-sm font-medium tracking-widest text-[#999999]">
+      <div className="relative text-white cursor-pointer hover:text-white transition-colors">
+        HOME
+      </div>
+      <div className="hover:text-white transition-colors cursor-pointer">WORK</div>
+      <div className="hover:text-white transition-colors cursor-pointer">ABOUT</div>
+      <div className="hover:text-white transition-colors cursor-pointer">CONTACT</div>
+    </div>
+  </nav>
+);
 
 function App() {
   // We no longer need the global hero opacity scroll transform
@@ -223,6 +236,7 @@ function App() {
       <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
           
           <HeroGrid />
+          <Navbar />
 
           <Motion.main 
           initial={{ opacity: 0 }}
@@ -242,7 +256,6 @@ function App() {
             transition={{ duration: 1, delay: 2.2 }}
             className="absolute bottom-12 flex flex-col items-center gap-3"
           >
-            <div className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Scroll to Reveal</div>
             <Motion.div 
               animate={{ y: [0, 8, 0] }}
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
