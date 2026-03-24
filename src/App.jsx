@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion as Motion } from 'framer-motion';
 import Skills from './components/Skills';
 import Portfolio from './components/Portfolio';
+import Playground from './components/Playground';
+import Footer from './components/Footer';
 
 // SVG Icons
 const GithubIcon = () => (
@@ -74,14 +76,93 @@ const CursorTrail = () => {
   );
 };
 
-// Simple static heading component instead of scroll scrub
-const StaticHeading = ({ text }) => {
+// Hero Grid background
+const HeroGrid = () => (
+  <div className="absolute inset-0 z-0 flex pointer-events-none w-full h-full">
+    {Array.from({ length: 14 }).map((_, i) => (
+      <div key={i} className={`flex-1 border-r border-white/[0.04] h-full ${i === 0 ? 'border-l' : ''}`} />
+    ))}
+  </div>
+);
+
+// Ultra-premium stacked wipe text reveal
+const UltraHeroHeading = () => {
   return (
-    <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white mb-6 flex justify-center flex-wrap gap-x-2 md:gap-x-4">
-      {text.split(' ').map((word, i) => (
-        <span key={i}>{word}</span>
-      ))}
-    </h1>
+    <Motion.div 
+      initial={{ scale: 0.92 }}
+      animate={{ scale: 1.04 }}
+      transition={{ duration: 2.5, ease: "easeOut" }}
+      className="relative flex items-center justify-center font-black uppercase tracking-[0.1em] mb-6 w-full"
+      style={{ fontSize: "clamp(56px, 8vw, 110px)", fontWeight: 900, height: "1.2em" }}
+    >
+      {/* Bottom Layer: Hollow Outline */}
+      <div 
+        className="absolute inset-0 flex items-center justify-center text-transparent whitespace-nowrap"
+        style={{ WebkitTextStroke: "1.5px rgba(255,255,255,0.18)" }}
+      >
+        SURYA PRATAP
+      </div>
+      
+      {/* Top Layer: Fill Wipe (animates inset from right to left, and color grey -> white) */}
+      <Motion.div 
+        initial={{ clipPath: "inset(0 100% 0 0)", color: "#666666" }}
+        animate={{ clipPath: "inset(0 0% 0 0)", color: "#ffffff" }}
+        transition={{ 
+          clipPath: { duration: 1, delay: 0.9, ease: [0.76, 0, 0.24, 1] },
+          color: { duration: 1, delay: 1.9, ease: "easeOut" }
+        }}
+        className="absolute inset-0 z-10 flex items-center justify-center select-none whitespace-nowrap"
+      >
+        SURYA PRATAP
+      </Motion.div>
+    </Motion.div>
+  );
+};
+
+// Animated subtitle with typewriter effect
+const AnimatedSubtitle = ({ texts, delay = 0.8 }) => {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [typingSpeed, setTypingSpeed] = useState(100);
+
+  useEffect(() => {
+    const currentText = texts[currentIndex];
+
+    const timer = setTimeout(() => {
+      if (!isDeleting && displayText === currentText) {
+        // Pause at end of typing
+        setTimeout(() => setIsDeleting(true), 1000);
+      } else if (isDeleting && displayText === '') {
+        // Move to next text
+        setIsDeleting(false);
+        setCurrentIndex((prev) => (prev + 1) % texts.length);
+      } else {
+        // Type or delete character
+        setDisplayText(
+          isDeleting
+            ? currentText.substring(0, displayText.length - 1)
+            : currentText.substring(0, displayText.length + 1)
+        );
+        setTypingSpeed(isDeleting ? 50 : 100);
+      }
+    }, typingSpeed);
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, currentIndex, texts, typingSpeed]);
+
+  return (
+    <Motion.p
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1, delay, ease: "easeOut" }}
+      className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-light tracking-wide mb-12"
+    >
+      <span className="inline-block">
+        {displayText}
+        <span className="inline-block w-2 h-6 ml-1 bg-purple-400 animate-pulse" />
+      </span>
+    </Motion.p>
   );
 };
 
@@ -124,7 +205,7 @@ function App() {
   // We no longer need the global hero opacity scroll transform
 
   return (
-    <div className="bg-black text-white selection:bg-purple-500/30 font-sans">
+    <div className="bg-[#0a0a0a] text-white selection:bg-purple-500/30 font-sans">
       
       <CursorTrail />
 
@@ -139,70 +220,27 @@ function App() {
       </Motion.div>
 
       {/* Hero Content Area - Removed h-[250vh] and sticky logic to stop the black gap */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center px-6 overflow-hidden">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
           
+          <HeroGrid />
+
           <Motion.main 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="relative z-10 flex flex-col items-center justify-center w-full"
+          className="relative z-10 flex flex-col items-center justify-center w-full h-full px-6"
         >
-          <Motion.div
-            animate={{ y: [-4, 4, -4] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-            className="flex flex-col items-center justify-center text-center max-w-4xl w-full"
-          >
-            {/* Static Heading */}
-            <StaticHeading text="Surya Pratap Singh" />
+          {/* Absolutely Centered Hero Name wrapper */}
+          <div className="flex flex-col items-center justify-center w-full max-w-[1400px]">
+            <UltraHeroHeading />
+          </div>
 
-            {/* Subheading */}
-            <Motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.8, ease: "easeOut" }}
-              className="text-lg sm:text-xl md:text-2xl text-neutral-400 font-light tracking-wide mb-12"
-            >
-              BCA AI/ML Student <span className="text-neutral-600 mx-2">|</span> Building AI Systems & Future Tech
-            </Motion.p>
-
-            {/* Buttons */}
-            <Motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1.2, ease: "easeOut" }}
-              className="flex flex-wrap items-center justify-center gap-6"
-            >
-              <Motion.a 
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(168,85,247,0.15)", backgroundColor: "rgba(255,255,255,0.1)" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3.5 rounded-full bg-white/5 border border-white/10 text-white font-medium transition-colors flex items-center gap-3 backdrop-blur-md"
-              >
-                <GithubIcon />
-                <span>GitHub</span>
-              </Motion.a>
-              <Motion.a 
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(168,85,247,0.15)", backgroundColor: "rgba(255,255,255,0.1)" }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-3.5 rounded-full bg-white/5 border border-white/10 text-white font-medium transition-colors flex items-center gap-3 backdrop-blur-md"
-              >
-                <LinkedinIcon />
-                <span>LinkedIn</span>
-              </Motion.a>
-            </Motion.div>
-          </Motion.div>
-
-          {/* Scroll Indicator */}
+          {/* Absolute Scroll Indicator */}
           <Motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 1, delay: 2.2 }}
-            className="absolute -bottom-24 flex flex-col items-center gap-3"
+            className="absolute bottom-12 flex flex-col items-center gap-3"
           >
             <div className="text-xs uppercase tracking-widest text-neutral-500 font-medium">Scroll to Reveal</div>
             <Motion.div 
@@ -210,7 +248,7 @@ function App() {
               transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
               className="flex flex-col items-center"
             >
-              <div className="w-[1px] h-12 bg-gradient-to-b from-purple-500/50 to-transparent mb-2" />
+              <div className="w-[1px] h-12 bg-gradient-to-b from-white/30 to-transparent mb-2" />
               <ArrowDownIcon />
             </Motion.div>
           </Motion.div>
@@ -224,6 +262,10 @@ function App() {
       <Skills />
       
       <Portfolio />
+      
+      <Playground />
+
+      <Footer />
     </div>
   );
 }
