@@ -71,14 +71,7 @@ const CursorTrail = () => {
   );
 };
 
-// Hero Grid background
-const HeroGrid = () => (
-  <div className="absolute inset-0 z-0 flex pointer-events-none w-full h-full">
-    {Array.from({ length: 14 }).map((_, i) => (
-      <div key={i} className={`flex-1 border-r border-white/[0.04] h-full ${i === 0 ? 'border-l' : ''}`} />
-    ))}
-  </div>
-);
+
 
 /*
  * Warp Speed Particle Tunnel — Canvas Background
@@ -98,8 +91,8 @@ const WarpSpeedCanvas = () => {
 
     let animId;
     let stars = [];
-    const STAR_COUNT = 600;
-    const SPEED = 0.4;           // medium cruise speed
+    const STAR_COUNT = 700;
+    const SPEED = 1.2;           // faster cruise speed
     const MAX_DEPTH = 1500;
 
     // Resize handler — keeps canvas pixel-perfect
@@ -162,19 +155,6 @@ const WarpSpeedCanvas = () => {
         ctx.arc(sx, sy, radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
         ctx.fill();
-
-        // Optional: tiny motion streak for nearer stars
-        if (depthFactor > 0.6) {
-          const trailLen = depthFactor * 4;
-          const dx = (s.x * 300) / (s.z + SPEED * 2) - (s.x * 300) / s.z;
-          const dy = (s.y * 300) / (s.z + SPEED * 2) - (s.y * 300) / s.z;
-          ctx.beginPath();
-          ctx.moveTo(sx, sy);
-          ctx.lineTo(sx - dx * trailLen, sy - dy * trailLen);
-          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.35})`;
-          ctx.lineWidth = radius * 0.6;
-          ctx.stroke();
-        }
       }
 
       animId = requestAnimationFrame(draw);
@@ -329,28 +309,17 @@ const Navbar = () => (
 
 export default function LandingPage() {
   return (
-    <div className="bg-[#0a0a0a] text-white selection:bg-purple-500/30 font-sans">
+    <div className="bg-black text-white selection:bg-purple-500/30 font-sans">
       
       <CursorTrail />
-
-      {/* Background Effect: Subtle purple gradient blob */}
-      <Motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 2 }}
-        className="fixed inset-0 z-0 pointer-events-none flex items-center justify-center"
-      >
-        <div className="w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[120px]" />
-      </Motion.div>
 
       {/* Warp Speed fade-in keyframe */}
       <style>{`@keyframes warpFadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
 
       {/* Hero Content Area */}
-      <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+      <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-black">
           
           <WarpSpeedCanvas />
-          <HeroGrid />
           <Navbar />
 
           <Motion.main 
