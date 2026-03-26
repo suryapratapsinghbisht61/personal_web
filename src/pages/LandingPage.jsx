@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion as Motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import Skills from '../components/Skills';
@@ -79,6 +79,128 @@ const HeroGrid = () => (
     ))}
   </div>
 );
+
+/*
+ * Warp Speed Particle Tunnel — Canvas Background
+ * ================================================
+ * Tiny white dot-particles radiate outward from the screen center
+ * at medium speed, creating a hyperspace / warp tunnel effect.
+ * Runs entirely on a <canvas> behind all hero content.
+ * Does NOT touch any existing hero elements.
+ */
+const WarpSpeedCanvas = () => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    let animId;
+    let stars = [];
+    const STAR_COUNT = 600;
+    const SPEED = 0.4;           // medium cruise speed
+    const MAX_DEPTH = 1500;
+
+    // Resize handler — keeps canvas pixel-perfect
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Seed a star at a random depth
+    const makeStar = (zOverride) => ({
+      x: (Math.random() - 0.5) * 2000,
+      y: (Math.random() - 0.5) * 2000,
+      z: zOverride !== undefined ? zOverride : Math.random() * MAX_DEPTH,
+    });
+
+    // Initial star pool — spread across all depths for instant density
+    stars = Array.from({ length: STAR_COUNT }, () => makeStar());
+
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const cx = w / 2;
+      const cy = h / 2;
+
+      // Clear with transparent so the page bg (#0a0a0a) shows through
+      ctx.clearRect(0, 0, w, h);
+
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+
+        // Move star toward camera
+        s.z -= SPEED * 2;
+
+        // Recycle star when it passes the camera
+        if (s.z <= 0) {
+          const fresh = makeStar(MAX_DEPTH);
+          s.x = fresh.x;
+          s.y = fresh.y;
+          s.z = fresh.z;
+        }
+
+        // Project 3-D → 2-D
+        const k = 300 / s.z;              // perspective scale factor
+        const sx = cx + s.x * k;
+        const sy = cy + s.y * k;
+
+        // Skip if offscreen
+        if (sx < -10 || sx > w + 10 || sy < -10 || sy > h + 10) continue;
+
+        // Depth-based appearance — closer = bigger + brighter
+        const depthFactor = 1 - s.z / MAX_DEPTH;     // 0 (far) → 1 (near)
+        const radius = 0.3 + depthFactor * 1.1;      // 0.3px → 1.4px  (tiny dots)
+        const alpha = 0.08 + depthFactor * 0.55;      // faint far, bright near
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+
+        // Optional: tiny motion streak for nearer stars
+        if (depthFactor > 0.6) {
+          const trailLen = depthFactor * 4;
+          const dx = (s.x * 300) / (s.z + SPEED * 2) - (s.x * 300) / s.z;
+          const dy = (s.y * 300) / (s.z + SPEED * 2) - (s.y * 300) / s.z;
+          ctx.beginPath();
+          ctx.moveTo(sx, sy);
+          ctx.lineTo(sx - dx * trailLen, sy - dy * trailLen);
+          ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.35})`;
+          ctx.lineWidth = radius * 0.6;
+          ctx.stroke();
+        }
+      }
+
+      animId = requestAnimationFrame(draw);
+    };
+
+    draw();
+
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none"
+      style={{
+        zIndex: 0,
+        opacity: 0,
+        animation: 'warpFadeIn 2s ease-out 0.3s forwards',
+      }}
+      aria-hidden="true"
+    />
+  );
+};
 
 // Ultra-premium stacked wipe text reveal
 const UltraHeroHeading = () => {
@@ -221,9 +343,13 @@ export default function LandingPage() {
         <div className="w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-[120px]" />
       </Motion.div>
 
+      {/* Warp Speed fade-in keyframe */}
+      <style>{`@keyframes warpFadeIn { from { opacity: 0; } to { opacity: 1; } }`}</style>
+
       {/* Hero Content Area */}
       <div className="relative min-h-screen w-full flex flex-col items-center justify-center overflow-hidden">
           
+          <WarpSpeedCanvas />
           <HeroGrid />
           <Navbar />
 
