@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Test User",
+    "email": "test@test.com",
+    "subject": "Testing",
+    "message": "Hello from terminal!",
+    "timestamp": "2026-03-26T18:26:49.044325"
+  }
+]
