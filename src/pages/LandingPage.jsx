@@ -148,7 +148,7 @@ const WarpSpeedCanvas = () => {
 
         // Depth-based appearance — closer = bigger + brighter
         const depthFactor = 1 - s.z / MAX_DEPTH;     // 0 (far) → 1 (near)
-        const radius = 0.3 + depthFactor * 1.1;      // 0.3px → 1.4px  (tiny dots)
+        const radius = 0.6 + depthFactor * 1.6;      // slightly larger dots
         const alpha = 0.08 + depthFactor * 0.55;      // faint far, bright near
 
         ctx.beginPath();

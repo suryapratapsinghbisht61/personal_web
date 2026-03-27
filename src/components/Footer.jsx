@@ -41,9 +41,9 @@ const Footer = () => {
           transition={{ duration: 0.8, delay: 0.2 }}
           className="flex flex-col items-center relative"
         >
-          <a href="mailto:hello@example.com" className="group">
+          <a href="mailto:suryapratapsinghbisht61@gmail.com" className="group">
             <span className="text-2xl sm:text-3xl font-serif italic text-white hover:text-white/80 transition-colors">
-              hello@example.com
+              suryapratapsinghbisht61@gmail.com
             </span>
             
             {/* The line below with integrated circle */}

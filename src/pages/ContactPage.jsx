@@ -34,11 +34,11 @@ const socialLinks = [
   { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
   { name: 'LinkedIn', url: 'https://linkedin.com', icon: '💼' },
   { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
-  { name: 'Email', url: 'mailto:hello@example.com', icon: '✉️' },
+  { name: 'Email', url: 'mailto:suryapratapsinghbisht61@gmail.com', icon: '✉️' },
 ];
 
 const contactInfo = [
-  { label: 'Email', value: 'hello@example.com', icon: '📧' },
+  { label: 'Email', value: 'suryapratapsinghbisht61@gmail.com', icon: '📧' },
   { label: 'Location', value: 'India', icon: '📍' },
   { label: 'Availability', value: 'Open to opportunities', icon: '🟢' },
 ];
@@ -223,7 +223,7 @@ export default function ContactPage() {
                         required
                         value={formData.email}
                         onChange={handleChange}
-                        placeholder="you@example.com"
+                        placeholder="yourname@domain.com"
                         className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-cyan-400/50 focus:bg-white/[0.06] transition-all"
                       />
                     </div>
