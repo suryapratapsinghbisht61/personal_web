@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
+import Footer from '../components/Footer';
 
 /* ─────────────────────────────────────────
    Contact Page — Premium dark-themed
@@ -30,6 +31,70 @@ const SendIcon = () => (
   </svg>
 );
 
+// Separate component for the warp speed effect to keep things clean
+const WarpSpeedCanvas = () => {
+  const canvasRef = React.useRef(null);
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let animId;
+    let stars = [];
+    const STAR_COUNT = 400;
+    const SPEED = 0.5;
+    const MAX_DEPTH = 1500;
+    const resize = () => {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = canvas.offsetWidth * dpr;
+      canvas.height = canvas.offsetHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    };
+    resize();
+    window.addEventListener('resize', resize);
+    const makeStar = (zOverride) => ({
+      x: (Math.random() - 0.5) * 2000,
+      y: (Math.random() - 0.5) * 2000,
+      z: zOverride !== undefined ? zOverride : Math.random() * MAX_DEPTH,
+    });
+    stars = Array.from({ length: STAR_COUNT }, () => makeStar());
+    const draw = () => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      const cx = w / 2;
+      const cy = h / 2;
+      ctx.clearRect(0, 0, w, h);
+      for (let i = 0; i < stars.length; i++) {
+        const s = stars[i];
+        s.z -= SPEED;
+        if (s.z <= 0) {
+          const fresh = makeStar(MAX_DEPTH);
+          Object.assign(s, fresh);
+        }
+        const k = 300 / s.z;
+        const sx = cx + s.x * k;
+        const sy = cy + s.y * k;
+        if (sx < -10 || sx > w + 10 || sy < -10 || sy > h + 10) continue;
+        const depthFactor = 1 - s.z / MAX_DEPTH;
+        const radius = 0.5 + depthFactor * 1.2;
+        const alpha = 0.05 + depthFactor * 0.4;
+        ctx.beginPath();
+        ctx.arc(sx, sy, radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
+        ctx.fill();
+      }
+      animId = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => {
+      cancelAnimationFrame(animId);
+      window.removeEventListener('resize', resize);
+    };
+  }, []);
+  return (
+    <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none opacity-60" style={{ zIndex: 0 }} aria-hidden="true" />
+  );
+};
+
 const socialLinks = [
   { name: 'GitHub', url: 'https://github.com/suryapratapsinghbisht61', icon: '🐙' },
   { name: 'LinkedIn', url: 'https://www.linkedin.com/in/surya-pratap-singh-12946a295/', icon: '💼' },
@@ -45,7 +110,7 @@ const contactInfo = [
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
-  const [status, setStatus] = useState('idle'); // idle | sending | success | error
+  const [status, setStatus] = useState('idle'); 
   const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e) => {
@@ -56,19 +121,16 @@ export default function ContactPage() {
     e.preventDefault();
     setStatus('sending');
     setErrorMsg('');
-
     try {
       const res = await fetch(`${FASTAPI_URL}/api/contact`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.detail || 'Something went wrong');
       }
-
       setStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
     } catch (err) {
@@ -78,64 +140,81 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden">
+    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden relative">
       
-      {/* Ambient background */}
-      <div className="fixed inset-0 pointer-events-none z-0">
+      {/* Background Star Field */}
+      <div className="fixed inset-0 z-0 bg-black">
+        <WarpSpeedCanvas />
         <div className="absolute top-1/3 right-1/3 w-[700px] h-[700px] bg-cyan-600/5 rounded-full blur-[140px]" />
         <div className="absolute bottom-1/3 left-1/3 w-[500px] h-[500px] bg-purple-600/5 rounded-full blur-[120px]" />
       </div>
 
       {/* ── Navigation ── */}
-      <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl bg-[#0a0a0a]/80 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 text-white/70 hover:text-white transition-colors group">
-            <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:border-cyan-400/50 group-hover:bg-cyan-400/10 transition-all">
+      <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-4 text-white/70 hover:text-white transition-all group">
+            <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-cyan-400 group-hover:bg-cyan-400/5 transition-all">
               <BackIcon />
             </div>
-            <span className="text-sm font-medium tracking-wide">Home</span>
+            <span className="text-xs font-bold tracking-[0.2em] uppercase">Home</span>
           </Link>
-          <div className="flex items-center gap-8 text-xs font-semibold tracking-widest text-white/40 uppercase">
+          <div className="flex items-center gap-8 text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/30 uppercase">
             <Link to="/about" className="hover:text-white transition-colors">About</Link>
-            <Link to="/contact" className="text-white">Contact</Link>
+            <Link to="/contact" className="text-white hover:text-white transition-colors">Contact</Link>
           </div>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative pt-36 pb-12 px-6">
-        <div className="max-w-5xl mx-auto relative z-10">
+      <section className="relative z-10 pt-48 pb-12 px-6">
+        <div className="max-w-6xl mx-auto relative z-10">
           <Motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse" />
-              <span className="text-xs font-bold tracking-[0.3em] text-cyan-400/80 uppercase">Get in Touch</span>
-            </div>
+            <Motion.div 
+               initial={{ opacity: 0, x: -20 }}
+               animate={{ opacity: 1, x: 0 }}
+               transition={{ delay: 0.5, duration: 0.8 }}
+               className="flex items-center gap-4 mb-8"
+            >
+              <div className="w-12 h-px bg-cyan-400" />
+              <span className="text-[10px] font-black tracking-[0.4em] text-cyan-400 uppercase">Connect</span>
+            </Motion.div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] mb-6">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-purple-400">
-                Let's Talk
-              </span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tighter leading-[0.85] mb-12 relative overflow-hidden">
+               <div 
+                 className="text-transparent z-0 opacity-20"
+                 style={{ WebkitTextStroke: "1px rgba(255,255,255,0.4)" }}
+               >
+                 GET IN TOUCH
+               </div>
+               <Motion.div 
+                 initial={{ clipPath: "inset(0 100% 0 0)" }}
+                 animate={{ clipPath: "inset(0 0% 0 0)" }}
+                 transition={{ duration: 1.5, delay: 0.2, ease: [0.76, 0, 0.24, 1] }}
+                 className="absolute inset-0 z-10 flex items-start justify-start select-none text-white whitespace-nowrap"
+               >
+                 GET IN TOUCH
+               </Motion.div>
             </h1>
 
             <Motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg md:text-xl text-white/50 max-w-xl font-light leading-relaxed"
+              transition={{ duration: 1, delay: 1 }}
+              className="text-xl md:text-2xl text-white/50 max-w-xl font-light leading-relaxed tracking-tight"
             >
               Have a project in mind, a question, or just want to say hello? 
-              Fill out the form below and I'll get back to you as soon as possible.
+              Let's start a conversation.
             </Motion.p>
           </Motion.div>
         </div>
       </section>
 
       {/* ── Contact Info Cards ── */}
-      <section className="pb-12 px-6 relative z-10">
+      <section className="pb-12 px-6 relative z-10 overflow-hidden">
         <div className="max-w-5xl mx-auto">
           <Motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -144,7 +223,7 @@ export default function ContactPage() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-12"
           >
             {contactInfo.map((info, i) => (
-              <div key={i} className="p-5 rounded-xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
+              <div key={i} className="p-5 rounded-xl border border-white/5 bg-white/2 backdrop-blur-sm">
                 <span className="text-xl mb-2 block">{info.icon}</span>
                 <span className="text-xs font-bold tracking-widest text-white/30 uppercase block mb-1">{info.label}</span>
                 <span className="text-sm text-white/70 font-medium">{info.value}</span>
@@ -155,14 +234,14 @@ export default function ContactPage() {
       </section>
 
       {/* ── Form + Sidebar ── */}
-      <section className="pb-24 px-6 relative z-10">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-10">
+      <section className="pb-32 px-6 relative z-10 overflow-hidden">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-12">
           
           {/* Contact Form — 3 col */}
           <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
+            transition={{ duration: 0.8, delay: 1.2 }}
             className="lg:col-span-3"
           >
             <AnimatePresence mode="wait">
@@ -172,16 +251,16 @@ export default function ContactPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-12 text-center"
+                  className="rounded-3xl border border-emerald-500/30 bg-emerald-500/5 p-16 text-center backdrop-blur-xl"
                 >
-                  <div className="text-emerald-400 flex justify-center mb-6">
+                  <div className="text-emerald-400 flex justify-center mb-8">
                     <CheckIcon />
                   </div>
-                  <h3 className="text-2xl font-bold mb-3 text-white">Message Sent!</h3>
-                  <p className="text-white/50 mb-8">Thank you for reaching out. I'll get back to you soon.</p>
+                  <h3 className="text-3xl font-black tracking-tighter mb-4 text-white">Message Inbound</h3>
+                  <p className="text-white/50 mb-10 font-light">Thank you for reaching out. I'll get back to you across the wire very soon.</p>
                   <button
                     onClick={() => setStatus('idle')}
-                    className="px-6 py-3 rounded-full border border-white/20 text-white/70 text-sm font-semibold tracking-wider uppercase hover:border-white/40 hover:text-white transition-all"
+                    className="px-10 py-5 rounded-full border border-white/10 text-white/70 text-xs font-black tracking-widest uppercase hover:border-white/40 hover:text-white transition-all shadow-xl"
                   >
                     Send Another →
                   </button>
@@ -193,16 +272,11 @@ export default function ContactPage() {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   onSubmit={handleSubmit}
-                  className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-sm p-8 md:p-10 space-y-6"
+                  className="rounded-3xl border border-white/5 bg-white/1 backdrop-blur-2xl p-10 md:p-14 space-y-10 shadow-2xl"
                 >
-                  <h2 className="text-xl font-bold tracking-tight mb-2">Send a Message</h2>
-                  <p className="text-xs text-white/30 mb-4">
-                    Powered by <span className="text-cyan-400 font-semibold">FastAPI</span> backend
-                  </p>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="name" className="text-xs font-bold tracking-widest text-white/40 uppercase mb-2 block">Name</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
+                    <div className="space-y-4">
+                      <label htmlFor="name" className="text-[10px] font-black tracking-[0.3em] text-white/30 uppercase ml-2 block">Ident Name</label>
                       <input
                         id="name"
                         name="name"
@@ -211,11 +285,11 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={handleChange}
                         placeholder="Your name"
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-cyan-400/50 focus:bg-white/[0.06] transition-all"
+                        className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white text-sm placeholder:text-white/10 focus:outline-none focus:border-cyan-400/50 focus:bg-white/6 transition-all"
                       />
                     </div>
-                    <div>
-                      <label htmlFor="email" className="text-xs font-bold tracking-widest text-white/40 uppercase mb-2 block">Email</label>
+                    <div className="space-y-4">
+                      <label htmlFor="email" className="text-[10px] font-black tracking-[0.3em] text-white/30 uppercase ml-2 block">Mail Endpoint</label>
                       <input
                         id="email"
                         name="email"
@@ -224,13 +298,13 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="yourname@domain.com"
-                        className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-cyan-400/50 focus:bg-white/[0.06] transition-all"
+                        className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white text-sm placeholder:text-white/10 focus:outline-none focus:border-cyan-400/50 focus:bg-white/6 transition-all"
                       />
                     </div>
                   </div>
 
-                  <div>
-                    <label htmlFor="subject" className="text-xs font-bold tracking-widest text-white/40 uppercase mb-2 block">Subject</label>
+                  <div className="space-y-4">
+                    <label htmlFor="subject" className="text-[10px] font-black tracking-[0.3em] text-white/30 uppercase ml-2 block">Core Subject</label>
                     <input
                       id="subject"
                       name="subject"
@@ -239,30 +313,29 @@ export default function ContactPage() {
                       value={formData.subject}
                       onChange={handleChange}
                       placeholder="What's this about?"
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-cyan-400/50 focus:bg-white/[0.06] transition-all"
+                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white text-sm placeholder:text-white/10 focus:outline-none focus:border-cyan-400/50 focus:bg-white/6 transition-all"
                     />
                   </div>
 
-                  <div>
-                    <label htmlFor="message" className="text-xs font-bold tracking-widest text-white/40 uppercase mb-2 block">Message</label>
+                  <div className="space-y-4">
+                    <label htmlFor="message" className="text-[10px] font-black tracking-[0.3em] text-white/30 uppercase ml-2 block">Encrypted Payload</label>
                     <textarea
                       id="message"
                       name="message"
                       required
-                      rows={5}
+                      rows={6}
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="Tell me about your project, idea, or question..."
-                      className="w-full px-4 py-3 rounded-xl bg-white/5 border border-white/10 text-white text-sm placeholder:text-white/20 focus:outline-none focus:border-cyan-400/50 focus:bg-white/[0.06] transition-all resize-none"
+                      className="w-full px-6 py-4 rounded-2xl bg-white/5 border border-white/5 text-white text-sm placeholder:text-white/10 focus:outline-none focus:border-cyan-400/50 focus:bg-white/6 transition-all resize-none"
                     />
                   </div>
 
-                  {/* Error display */}
                   {status === 'error' && (
                     <Motion.div
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm"
+                      className="p-5 rounded-2xl bg-red-500/5 border border-red-500/20 text-red-300 text-xs font-medium"
                     >
                       {errorMsg}
                     </Motion.div>
@@ -271,17 +344,17 @@ export default function ContactPage() {
                   <button
                     type="submit"
                     disabled={status === 'sending'}
-                    className="w-full sm:w-auto flex items-center justify-center gap-3 px-8 py-4 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm tracking-wider uppercase hover:opacity-90 transition-all hover:-translate-y-1 shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+                    className="group relative w-full sm:w-auto flex items-center justify-center gap-4 px-10 py-5 rounded-full bg-linear-to-r from-cyan-500 to-blue-600 text-white font-black text-xs tracking-widest uppercase hover:opacity-90 transition-all hover:-translate-y-1 shadow-lg shadow-cyan-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {status === 'sending' ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                        Sending...
+                        Transmitting...
                       </>
                     ) : (
                       <>
                         <SendIcon />
-                        Send Message
+                        Transmit Message
                       </>
                     )}
                   </button>
@@ -294,24 +367,24 @@ export default function ContactPage() {
           <Motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="lg:col-span-2 space-y-6"
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="lg:col-span-2 space-y-8"
           >
             {/* Social Links */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
-              <h3 className="text-sm font-bold tracking-widest text-white/50 uppercase mb-5">Connect</h3>
-              <div className="space-y-3">
+            <div className="rounded-[2.5rem] border border-white/5 bg-white/1 p-10 backdrop-blur-2xl shadow-2xl">
+              <h3 className="text-[10px] font-black tracking-[0.4em] text-white/20 uppercase mb-8 ml-2">Connect Hub</h3>
+              <div className="space-y-4">
                 {socialLinks.map((link, i) => (
                   <a
                     key={i}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-3 rounded-xl hover:bg-white/5 transition-all group"
+                    className="flex items-center gap-6 p-5 rounded-2xl hover:bg-white/5 border border-transparent hover:border-white/5 transition-all group"
                   >
-                    <span className="text-xl">{link.icon}</span>
-                    <span className="text-sm font-medium text-white/60 group-hover:text-white transition-colors">{link.name}</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-auto text-white/20 group-hover:text-white/50 transition-colors">
+                    <span className="text-2xl group-hover:scale-110 transition-transform">{link.icon}</span>
+                    <span className="text-sm font-bold text-white/40 group-hover:text-white transition-colors uppercase tracking-widest">{link.name}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-auto text-white/5 group-hover:text-cyan-400 group-hover:translate-x-1 transition-all">
                       <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
                     </svg>
                   </a>
@@ -320,30 +393,25 @@ export default function ContactPage() {
             </div>
 
             {/* API Status */}
-            <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-7">
-              <h3 className="text-sm font-bold tracking-widest text-white/50 uppercase mb-4">Backend Status</h3>
-              <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03]">
-                <div className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+            <div className="rounded-[2.5rem] border border-white/5 bg-white/1 p-10 backdrop-blur-2xl shadow-2xl">
+              <h3 className="text-[10px] font-black tracking-[0.4em] text-white/20 uppercase mb-6 ml-2">Internal Status</h3>
+              <div className="flex items-center gap-5 p-5 rounded-2xl bg-white/2">
+                <div className="w-3 h-3 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_10px_rgba(34,211,238,0.5)]" />
                 <div>
-                  <span className="text-sm font-medium text-white/70 block">FastAPI Server</span>
-                  <span className="text-[10px] text-white/30 font-mono">localhost:8000</span>
+                  <span className="text-xs font-black text-white/80 block uppercase tracking-tighter">FastAPI Cluster</span>
+                  <span className="text-[10px] text-white/20 font-mono tracking-tight">NODE.JS / REACT / VITE</span>
                 </div>
               </div>
-              <p className="text-[11px] text-white/20 mt-4 leading-relaxed">
-                The contact form connects to a FastAPI backend. 
-                Run <code className="text-cyan-400/60 font-mono">python backend/main.py</code> to start the API server.
+              <p className="text-[11px] text-white/20 mt-6 leading-relaxed font-light ml-2">
+                The transmission protocol leverages an asynchronous FastAPI cluster. 
+                System online and ready for input payloads.
               </p>
             </div>
           </Motion.div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-white/5 py-8 px-6 text-center">
-        <p className="text-xs text-white/20 font-medium tracking-wider">
-          © {new Date().getFullYear()} Surya Pratap Singh · Powered by FastAPI
-        </p>
-      </footer>
+      <Footer />
     </div>
   );
 }
