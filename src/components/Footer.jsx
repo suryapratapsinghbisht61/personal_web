@@ -67,10 +67,10 @@ const Footer = () => {
           
           {/* Social Links on Left */}
           <div className="flex items-center gap-6 sm:gap-8">
-            <a href="#" className="hover:text-white transition-colors">Twitter</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
-            <a href="#" className="hover:text-white transition-colors">Instagram</a>
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+            <a href="https://x.com/surya_pratap_" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Twitter</a>
+            <a href="https://www.linkedin.com/in/surya-pratap-singh-12946a295/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">LinkedIn</a>
+            <a href="https://www.instagram.com/surya_pratap_singh__bisht/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
+            <a href="https://github.com/suryapratapsinghbisht61" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
 
           <div className="flex items-center gap-8 text-neutral-500">

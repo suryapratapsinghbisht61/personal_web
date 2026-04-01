@@ -31,9 +31,9 @@ const SendIcon = () => (
 );
 
 const socialLinks = [
-  { name: 'GitHub', url: 'https://github.com', icon: '🐙' },
-  { name: 'LinkedIn', url: 'https://linkedin.com', icon: '💼' },
-  { name: 'Twitter', url: 'https://twitter.com', icon: '🐦' },
+  { name: 'GitHub', url: 'https://github.com/suryapratapsinghbisht61', icon: '🐙' },
+  { name: 'LinkedIn', url: 'https://www.linkedin.com/in/surya-pratap-singh-12946a295/', icon: '💼' },
+  { name: 'Twitter', url: 'https://x.com/surya_pratap_', icon: '🐦' },
   { name: 'Email', url: 'mailto:suryapratapsinghbisht61@gmail.com', icon: '✉️' },
 ];
 
