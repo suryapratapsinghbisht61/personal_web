@@ -22,7 +22,7 @@ const LinkedinIcon = () => (
 );
 
 const ArrowDownIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-purple-400">
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-white/20">
     <path d="M12 5v14"></path>
     <path d="m19 12-7 7-7-7"></path>
   </svg>
@@ -64,7 +64,7 @@ const CursorTrail = () => {
   return (
     <div 
       id="optimized-cursor" 
-      className="fixed top-0 left-0 w-4 h-4 rounded-full bg-purple-400 pointer-events-none z-50 opacity-70 transition-opacity duration-300"
+      className="fixed top-0 left-0 w-4 h-4 rounded-full bg-white pointer-events-none z-50 opacity-40 transition-opacity duration-300"
       style={{ willChange: "transform" }}
       aria-hidden="true"
     />
@@ -309,7 +309,7 @@ const Navbar = () => (
 
 export default function LandingPage() {
   return (
-    <div className="bg-black text-white selection:bg-purple-500/30 font-sans">
+    <div className="bg-black text-white selection:bg-white selection:text-black font-sans">
       
       <CursorTrail />
 

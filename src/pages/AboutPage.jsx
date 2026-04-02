@@ -4,41 +4,39 @@ import { Link } from 'react-router-dom';
 import Footer from '../components/Footer';
 
 /* ─────────────────────────────────────────
-   About Page — Premium dark‐themed page
-   showcasing personal info, timeline,
-   tech stack, and philosophy.
-   Backend: fetches profile data from FastAPI
+   About Page — Premium Minimalist Design
+   Focused on typography, white space, and 
+   a monochromatic palette.
 ───────────────────────────────────────── */
 
 const BackIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 12H5" /><path d="m12 19-7-7 7-7" />
   </svg>
 );
 
 const timeline = [
-  { year: '2024', title: 'Started AI/ML Journey', desc: 'Began exploring machine learning, deep learning, and building intelligent systems.' },
-  { year: '2024', title: 'Full Stack Development', desc: 'Built production-ready web applications using React, Django, and PostgreSQL.' },
-  { year: '2025', title: 'Agentic AI & LLMs', desc: 'Dived into large language models, fine-tuning, and autonomous AI agent architectures.' },
-  { year: '2025', title: 'FastAPI & Microservices', desc: 'Adopted FastAPI for high-performance async APIs and microservice architectures.' },
-  { year: '2026', title: 'Building Products', desc: 'Currently working on startup ideas and open-source tools at the intersection of AI and web.' },
+  { year: '2024', title: 'Started AI/ML Journey', desc: 'Exploration of neural networks, advanced mathematics, and building foundational intelligent systems.' },
+  { year: '2024', title: 'Full Stack Development', desc: 'Engineering robust, production-ready web architectures with modern frameworks and databases.' },
+  { year: '2025', title: 'Agentic AI & LLMs', desc: 'Specializing in autonomous agent architectures, multi-agent systems, and LLM fine-tuning.' },
+  { year: '2025', title: 'Scalable Systems', desc: 'Architecting high-performance asynchronous APIs and microservice-based infrastructure.' },
+  { year: '2026', title: 'Product Innovation', desc: 'Currently pioneering new products at the intersection of generative AI and human-centric design.' },
 ];
 
 const techStack = [
-  { category: 'Frontend', items: ['React', 'Vite', 'Framer Motion', 'Tailwind CSS', 'Three.js'], color: '#8b5cf6' },
-  { category: 'Backend', items: ['FastAPI', 'Django', 'Django REST Framework', 'Node.js'], color: '#06b6d4' },
-  { category: 'AI / ML', items: ['Python', 'PyTorch', 'Transformers', 'LangChain', 'ONNX'], color: '#f43f5e' },
-  { category: 'DevOps', items: ['Docker', 'GitHub Actions', 'Nginx', 'PostgreSQL', 'Redis'], color: '#10b981' },
+  { category: 'Frontend', items: ['React', 'Next.js', 'Vite', 'Framer Motion', 'Tailwind CSS', 'Three.js'] },
+  { category: 'Backend', items: ['FastAPI', 'Python', 'Node.js', 'PostgreSQL', 'Redis', 'Docker'] },
+  { category: 'Intelligence', items: ['PyTorch', 'Transformers', 'LangChain', 'OpenAI SDK', 'ONNX Runtime'] },
+  { category: 'Infrastructure', items: ['GitHub Actions', 'Nginx', 'AWS', 'Linux', 'Vercel'] },
 ];
 
 const values = [
-  { emoji: '⚡', title: 'Performance First', desc: 'Every line of code is optimized for speed and efficiency.' },
-  { emoji: '🎨', title: 'Design Obsessed', desc: 'Interfaces should feel premium, alive, and delightful to use.' },
-  { emoji: '🧠', title: 'AI Native', desc: 'Thinking in AI-first paradigms to build smarter applications.' },
-  { emoji: '🔒', title: 'Security Minded', desc: 'Building with security best practices from day one.' },
+  { title: 'Performance', desc: 'Optimizing for speed at every layer of the stack.' },
+  { title: 'Precision', desc: 'Meticulous attention to detail in both logic and visual design.' },
+  { title: 'Intelligence', desc: 'Leveraging AI-first paradigms to solve complex problems.' },
+  { title: 'Scalability', desc: 'Building systems that grow seamlessly with user needs.' },
 ];
 
-// Separate component for the warp speed effect to keep things clean
 const WarpSpeedCanvas = () => {
   const canvasRef = React.useRef(null);
 
@@ -49,9 +47,9 @@ const WarpSpeedCanvas = () => {
 
     let animId;
     let stars = [];
-    const STAR_COUNT = 400; // Fewer stars for sub-pages to keep them subtler
-    const SPEED = 0.5;      
-    const MAX_DEPTH = 1500;
+    const STAR_COUNT = 300; 
+    const SPEED = 0.2;      
+    const MAX_DEPTH = 2000;
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1;
@@ -63,8 +61,8 @@ const WarpSpeedCanvas = () => {
     window.addEventListener('resize', resize);
 
     const makeStar = (zOverride) => ({
-      x: (Math.random() - 0.5) * 2000,
-      y: (Math.random() - 0.5) * 2000,
+      x: (Math.random() - 0.5) * 2500,
+      y: (Math.random() - 0.5) * 2500,
       z: zOverride !== undefined ? zOverride : Math.random() * MAX_DEPTH,
     });
 
@@ -84,13 +82,13 @@ const WarpSpeedCanvas = () => {
           const fresh = makeStar(MAX_DEPTH);
           Object.assign(s, fresh);
         }
-        const k = 300 / s.z;
+        const k = 400 / s.z;
         const sx = cx + s.x * k;
         const sy = cy + s.y * k;
-        if (sx < -10 || sx > w + 10 || sy < -10 || sy > h + 10) continue;
+        if (sx < -20 || sx > w + 20 || sy < -20 || sy > h + 20) continue;
         const depthFactor = 1 - s.z / MAX_DEPTH;
-        const radius = 0.5 + depthFactor * 1.2;
-        const alpha = 0.05 + depthFactor * 0.4;
+        const radius = 0.4 + depthFactor * 0.8;
+        const alpha = 0.05 + depthFactor * 0.25;
         ctx.beginPath();
         ctx.arc(sx, sy, radius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`;
@@ -108,7 +106,7 @@ const WarpSpeedCanvas = () => {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none opacity-60"
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-40"
       style={{ zIndex: 0 }}
       aria-hidden="true"
     />
@@ -117,187 +115,125 @@ const WarpSpeedCanvas = () => {
 
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-purple-500/30 overflow-x-hidden relative">
+    <div className="min-h-screen bg-[#000] text-white font-sans selection:bg-white selection:text-black overflow-x-hidden relative">
       
-      {/* Background Star Field */}
+      {/* Background Layer */}
       <div className="fixed inset-0 z-0 bg-black">
         <WarpSpeedCanvas />
-        <div className="absolute top-1/4 left-1/3 w-[700px] h-[700px] bg-purple-600/5 rounded-full blur-[140px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-indigo-600/5 rounded-full blur-[120px]" />
+        <div className="absolute top-0 inset-x-0 h-64 bg-linear-to-b from-white/5 to-transparent pointer-events-none" />
       </div>
 
       {/* ── Navigation ── */}
-      <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-2xl bg-black/60 border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-4 text-white/70 hover:text-white transition-all group">
-            <div className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center group-hover:border-purple-400 group-hover:bg-purple-400/5 transition-all">
+      <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl bg-black/40 border-b border-white/5">
+        <div className="max-w-7xl mx-auto px-8 py-6 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 text-white/50 hover:text-white transition-all group">
+            <div className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center group-hover:border-white group-hover:bg-white/5 transition-all">
               <BackIcon />
             </div>
-            <span className="text-xs font-bold tracking-[0.2em] uppercase">Home</span>
+            <span className="text-[10px] font-bold tracking-[0.2em] uppercase">Back</span>
           </Link>
-          <div className="flex items-center gap-8 text-[10px] sm:text-xs font-bold tracking-[0.3em] text-white/30 uppercase">
-            <Link to="/about" className="text-white hover:text-white transition-colors">About</Link>
+          <div className="flex items-center gap-10 text-[10px] font-bold tracking-[0.3em] text-white/20 uppercase">
+            <Link to="/about" className="text-white">About</Link>
             <Link to="/contact" className="hover:text-white transition-colors">Contact</Link>
           </div>
         </div>
       </nav>
 
       {/* ── Hero ── */}
-      <section className="relative z-10 pt-36 pb-24 px-6">
-        <div className="max-w-5xl mx-auto relative z-10">
+      <section className="relative z-10 pt-48 pb-32 px-8">
+        <div className="max-w-5xl mx-auto">
           <Motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-3 h-3 rounded-full bg-purple-400 animate-pulse" />
-              <span className="text-xs font-bold tracking-[0.3em] text-purple-400/80 uppercase">About Me</span>
+            <div className="flex items-center gap-3 mb-10">
+              <div className="w-1.5 h-1.5 rounded-full bg-white" />
+              <span className="text-[10px] font-bold tracking-[0.4em] text-white/40 uppercase">Architecture of a Builder</span>
             </div>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] mb-8">
-              <span className="text-white">Surya Pratap</span>
-              <br />
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-300 via-indigo-300 to-purple-400">
-                Singh
-              </span>
+            <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-medium tracking-tightest leading-[0.85] mb-12">
+              <span className="text-white block">Surya Pratap</span>
+              <span className="text-white/20 block">Singh Bisht</span>
             </h1>
 
             <Motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg md:text-xl text-white/50 max-w-2xl font-light leading-relaxed"
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl md:text-2xl text-white/40 max-w-2xl font-light leading-relaxed tracking-tight"
             >
-              Full-stack developer & AI enthusiast building at the intersection of 
-              intelligent systems and beautiful interfaces. I craft production-grade 
-              web applications, train ML models, and design autonomous AI agents — 
-              all with a relentless focus on performance and premium UX.
+              Engineering the next generation of intelligent systems. 
+              Currently focused on the convergence of large language models 
+              and autonomous agents to build software that thinks.
             </Motion.p>
           </Motion.div>
         </div>
       </section>
 
       {/* ── Core Values ── */}
-      <section className="py-32 px-6 relative z-10 border-t border-white/5 bg-white/1">
+      <section className="py-40 px-8 relative z-10 border-t border-white/5 bg-white/[0.01]">
         <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
             <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">Core Philosophy</h2>
-              <p className="text-white/40 text-lg font-light">The principles that drive my work.</p>
+              <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-4">Philosophy</h2>
+              <p className="text-white/30 text-lg font-light tracking-tight">Fundamental principles of engineering.</p>
             </div>
-            <div className="h-px flex-1 bg-white/5 hidden md:block mb-4 mx-12"></div>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-white/20 uppercase mb-4">Values / 01</span>
+            <span className="text-[10px] font-bold tracking-[0.4em] text-white/10 uppercase mb-4">Section / 01</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {values.map((v, i) => (
               <Motion.div
                 key={i}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                whileHover={{ y: -8, backgroundColor: 'rgba(255,255,255,0.03)' }}
-                className="p-8 rounded-3xl border border-white/5 bg-white/1 backdrop-blur-md transition-all group cursor-default h-full flex flex-col"
-              >
-                <div className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center text-3xl mb-8 group-hover:scale-110 transition-transform duration-500">
-                   {v.emoji}
-                </div>
-                <h3 className="text-xl font-bold mb-3 text-white">{v.title}</h3>
-                <p className="text-sm text-white/40 font-light leading-relaxed">{v.desc}</p>
-              </Motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Journey Timeline ── */}
-      <section className="py-32 px-6 relative z-10 overflow-hidden">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">Development Journey</h2>
-              <p className="text-white/40 text-lg font-light">My evolution as a developer and engineer.</p>
-            </div>
-            <div className="h-px flex-1 bg-white/5 hidden md:block mb-4 mx-12"></div>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-white/20 uppercase mb-4">Milestones / 02</span>
-          </div>
-
-          <div className="relative pl-8 md:pl-0">
-            {/* Timeline Line */}
-            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-linear-to-b from-purple-500/0 via-purple-500/20 to-purple-500/0 hidden md:block transform -translate-x-1/2" />
-            <div className="absolute left-8 md:hidden top-0 bottom-0 w-px bg-linear-to-b from-purple-500/0 via-purple-500/20 to-purple-500/0" />
-
-            <div className="flex flex-col gap-24">
-              {timeline.map((item, i) => (
-                <Motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 40 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: "-100px" }}
-                  transition={{ duration: 0.8, delay: i * 0.1 }}
-                  className={`flex flex-col md:flex-row items-center gap-12 ${i % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'}`}
-                >
-                  <div className={`flex-1 w-full text-left ${i % 2 === 0 ? 'md:text-right' : 'md:text-left'}`}>
-                    <span className="text-xs font-black tracking-[0.4em] text-purple-400 mb-4 block">{item.year}</span>
-                    <h3 className="text-2xl md:text-3xl font-bold text-white mb-4 group-hover:text-purple-300 transition-colors uppercase tracking-tight">{item.title}</h3>
-                    <p className={`text-base text-white/40 font-light leading-relaxed max-w-sm ${i % 2 === 0 ? 'md:ml-auto' : 'md:ml-0'}`}>{item.desc}</p>
-                  </div>
-                  
-                  <div className="relative z-10 shrink-0">
-                    <div className="w-4 h-4 rounded-full bg-black border-2 border-purple-500 shadow-[0_0_15px_rgba(168,85,247,0.5)]" />
-                  </div>
-
-                  <div className="flex-1 hidden md:block" />
-                </Motion.div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ── Tech Stack ── */}
-      <section className="py-32 px-6 relative z-10 border-t border-white/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-black tracking-tighter mb-4">Technical Arsenal</h2>
-              <p className="text-white/40 text-lg font-light">The technologies I leverage to build modern solutions.</p>
-            </div>
-            <div className="h-px flex-1 bg-white/5 hidden md:block mb-4 mx-12"></div>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-white/20 uppercase mb-4">Stack / 03</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {techStack.map((group, i) => (
-              <Motion.div
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="p-10 rounded-4xl border border-white/5 bg-white/1 backdrop-blur-sm relative overflow-hidden group hover:border-white/10 transition-all shadow-2xl"
+                transition={{ delay: i * 0.1, duration: 0.8 }}
+                className="p-10 rounded-2xl border border-white/5 bg-white/[0.02] transition-all hover:bg-white/[0.04] group cursor-default"
               >
-                <div className="absolute left-0 top-0 bottom-0 w-1.5 rounded-full opacity-50 group-hover:opacity-100 transition-opacity" style={{ backgroundColor: group.color }} />
-                
-                <h3 className="text-xs font-black tracking-[0.3em] uppercase mb-10 pl-4" style={{ color: group.color }}>
-                  {group.category}
-                </h3>
-                <div className="flex flex-wrap gap-3 pl-4">
-                  {group.items.map((item, j) => (
-                    <span 
-                      key={j}
-                      className="px-5 py-2.5 rounded-full text-xs font-bold border transition-all hover:scale-105 active:scale-95"
-                      style={{ 
-                        borderColor: `${group.color}20`, 
-                        color: `${group.color}cc`,
-                        backgroundColor: `${group.color}05`
-                      }}
-                    >
-                      {item}
-                    </span>
-                  ))}
+                <div className="text-[10px] font-black tracking-widest text-white/20 mb-10 group-hover:text-white/40 transition-colors">
+                  {String(i + 1).padStart(2, '0')}
+                </div>
+                <h3 className="text-lg font-medium mb-4 text-white uppercase tracking-wider">{v.title}</h3>
+                <p className="text-sm text-white/30 font-light leading-relaxed tracking-wide">{v.desc}</p>
+              </Motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Journey ── */}
+      <section className="py-40 px-8 relative z-10">
+        <div className="max-w-6xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-4">Timeline</h2>
+              <p className="text-white/30 text-lg font-light tracking-tight">The progression of technical mastery.</p>
+            </div>
+            <span className="text-[10px] font-bold tracking-[0.4em] text-white/10 uppercase mb-4">Section / 02</span>
+          </div>
+
+          <div className="space-y-32">
+            {timeline.map((item, i) => (
+              <Motion.div
+                key={i}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+                className="flex flex-col md:flex-row items-start gap-12"
+              >
+                <span className="text-[10px] font-bold tracking-[0.5em] text-white/20 uppercase pt-2 w-20">
+                  {item.year}
+                </span>
+                <div className="flex-1">
+                  <h3 className="text-2xl md:text-4xl font-medium text-white mb-6 tracking-tight">
+                    {item.title}
+                  </h3>
+                  <p className="text-lg md:text-xl text-white/30 font-light leading-relaxed max-w-2xl tracking-tight">
+                    {item.desc}
+                  </p>
                 </div>
               </Motion.div>
             ))}
@@ -305,31 +241,61 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ── Fun Facts ── */}
-      <section className="py-32 px-6 relative z-10 bg-white/1">
+      {/* ── Technical Stack ── */}
+      <section className="py-40 px-8 relative z-10 border-t border-white/5 bg-white/[0.01]">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-24 gap-8">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-medium tracking-tight mb-4">Stack</h2>
+              <p className="text-white/30 text-lg font-light tracking-tight">Modern tools for complex problems.</p>
+            </div>
+            <span className="text-[10px] font-bold tracking-[0.4em] text-white/10 uppercase mb-4">Section / 03</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5">
+            {techStack.map((group, i) => (
+              <div key={i} className="bg-black p-10 h-full">
+                <h3 className="text-[10px] font-bold tracking-[0.4em] uppercase mb-10 text-white/40">
+                  {group.category}
+                </h3>
+                <ul className="space-y-4">
+                  {group.items.map((item, j) => (
+                    <li key={j} className="text-sm font-light text-white/60 hover:text-white transition-colors cursor-default">
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Metrics ── */}
+      <section className="py-40 px-8 relative z-10 border-t border-white/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
             {[
-              { value: '500+', label: 'Commits', icon: '📦' },
-              { value: '15+', label: 'Projects', icon: '🚀' },
-              { value: '∞', label: 'Curiosity', icon: '🧠' },
-              { value: '☕', label: 'Fuel', icon: '☕' },
+              { value: '500+', label: 'COMMITS' },
+              { value: '15+', label: 'PROJECTS' },
+              { value: 'LLM', label: 'EXPERTISE' },
+              { value: '24/7', label: 'OPTIMIZATION' },
             ].map((stat, i) => (
               <Motion.div
                 key={i}
-                whileHover={{ y: -10, backgroundColor: 'rgba(255,255,255,0.03)' }}
-                className="p-10 rounded-[2.5rem] border border-white/5 bg-white/1 text-center transition-all cursor-default flex flex-col items-center justify-center backdrop-blur-xl"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                transition={{ delay: i * 0.1 }}
+                className="flex flex-col gap-2"
               >
-                <span className="text-4xl mb-6">{stat.icon}</span>
-                <span className="text-5xl md:text-6xl font-black tracking-tighter text-white block mb-2">{stat.value}</span>
-                <span className="text-[10px] font-black tracking-[0.4em] text-white/20 uppercase block">{stat.label}</span>
+                <span className="text-4xl md:text-5xl font-medium tracking-tighter text-white">{stat.value}</span>
+                <span className="text-[10px] font-bold tracking-[0.5em] text-white/10 uppercase">{stat.label}</span>
               </Motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Use shared footer for consistency */}
       <Footer />
     </div>
   );
