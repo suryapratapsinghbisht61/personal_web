@@ -193,8 +193,9 @@ const ParticleText = ({ text }) => {
   const canvasRef = useRef(null);
   const containerRef = useRef(null);
   const particles = useRef([]);
-  const mouse = useRef({ x: -1000, y: -1000, radius: 100 });
+  const mouse = useRef({ x: -1000, y: -1000, radius: 140 }); // slightly larger radius
   const animationId = useRef(null);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -230,7 +231,8 @@ const ParticleText = ({ text }) => {
 
       const imageData = tempCtx.getImageData(0, 0, w, h).data;
       const newParticles = [];
-      const step = Math.max(1, Math.floor(w / 400)); // Adjust density based on width
+      // Ultra-high density for solid-looking text
+      const step = w < 768 ? 1 : 2; 
 
       for (let y = 0; y < h; y += step) {
         for (let x = 0; x < w; x += step) {
@@ -244,10 +246,10 @@ const ParticleText = ({ text }) => {
               originY: y,
               vx: 0,
               vy: 0,
-              size: Math.random() * 1.5 + 0.5,
-              color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`,
-              friction: 0.9,
-              ease: 0.05 + Math.random() * 0.1,
+              size: Math.random() * 1.1 + 0.9,
+              color: '#ffffff', // bright solid white
+              friction: 0.94,
+              ease: 0.08 + Math.random() * 0.12,
             });
           }
         }
@@ -259,23 +261,26 @@ const ParticleText = ({ text }) => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       const pArr = particles.current;
+      const isHover = isHovering; // read state for this frame
+
       for (let i = 0; i < pArr.length; i++) {
         const p = pArr[i];
         
-        // Distance to mouse
-        const dx = mouse.current.x - p.x;
-        const dy = mouse.current.y - p.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        // Repulsion logic
-        if (distance < mouse.current.radius) {
-          const force = (mouse.current.radius - distance) / mouse.current.radius;
-          const angle = Math.atan2(dy, dx);
-          p.vx -= Math.cos(angle) * force * 15; // "explosion" strength
-          p.vy -= Math.sin(angle) * force * 15;
+        // Repulsion logic - ONLY applies when hovering
+        if (isHover) {
+          const dx = mouse.current.x - p.x;
+          const dy = mouse.current.y - p.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < mouse.current.radius) {
+            const force = (mouse.current.radius - distance) / mouse.current.radius;
+            const angle = Math.atan2(dy, dx);
+            p.vx -= Math.cos(angle) * force * 20; 
+            p.vy -= Math.sin(angle) * force * 20;
+          }
         }
 
-        // Return to origin force
+        // Return to origin force (always active to snap back)
         p.vx += (p.originX - p.x) * p.ease;
         p.vy += (p.originY - p.y) * p.ease;
 
@@ -306,15 +311,17 @@ const ParticleText = ({ text }) => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationId.current);
     };
-  }, [text]);
+  }, [text, isHovering]);
 
   const onMouseMove = (e) => {
+    setIsHovering(true);
     const rect = canvasRef.current.getBoundingClientRect();
     mouse.current.x = e.clientX - rect.left;
     mouse.current.y = e.clientY - rect.top;
   };
 
   const onMouseLeave = () => {
+    setIsHovering(false);
     mouse.current.x = -1000;
     mouse.current.y = -1000;
   };
