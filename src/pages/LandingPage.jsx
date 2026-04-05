@@ -182,34 +182,165 @@ const WarpSpeedCanvas = () => {
   );
 };
 
-// Ultra-premium stacked wipe text reveal
+/*
+ * Particle Text Effect
+ * ================================================
+ * Renders text as a system of thousands of tiny particles on a canvas.
+ * Particles react to the mouse by dispersing (atomic spread) and
+ * automatically return to their original positions.
+ */
+const ParticleText = ({ text }) => {
+  const canvasRef = useRef(null);
+  const containerRef = useRef(null);
+  const particles = useRef([]);
+  const mouse = useRef({ x: -1000, y: -1000, radius: 100 });
+  const animationId = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    
+    const initParticles = () => {
+      const w = containerRef.current.offsetWidth;
+      const h = containerRef.current.offsetHeight;
+      
+      // Responsive canvas sizing
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      ctx.scale(dpr, dpr);
+      canvas.style.width = `${w}px`;
+      canvas.style.height = `${h}px`;
+
+      // Draw text on temporary canvas to sample pixels
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCanvas.width = w;
+      tempCanvas.height = h;
+
+      // Match the original UltraHeroHeading styling
+      const fontSize = Math.min(w / (text.length * 0.6), 110);
+      tempCtx.fillStyle = 'white';
+      tempCtx.font = `900 ${fontSize}px Inter, system-ui, sans-serif`;
+      tempCtx.textAlign = 'center';
+      tempCtx.textBaseline = 'middle';
+      tempCtx.textTransform = 'uppercase';
+      tempCtx.fillText(text.toUpperCase(), w / 2, h / 2);
+
+      const imageData = tempCtx.getImageData(0, 0, w, h).data;
+      const newParticles = [];
+      const step = Math.max(1, Math.floor(w / 400)); // Adjust density based on width
+
+      for (let y = 0; y < h; y += step) {
+        for (let x = 0; x < w; x += step) {
+          const index = (y * w + x) * 4;
+          const alpha = imageData[index + 3];
+          if (alpha > 128) {
+            newParticles.push({
+              x: x,
+              y: y,
+              originX: x,
+              originY: y,
+              vx: 0,
+              vy: 0,
+              size: Math.random() * 1.5 + 0.5,
+              color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`,
+              friction: 0.9,
+              ease: 0.05 + Math.random() * 0.1,
+            });
+          }
+        }
+      }
+      particles.current = newParticles;
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      const pArr = particles.current;
+      for (let i = 0; i < pArr.length; i++) {
+        const p = pArr[i];
+        
+        // Distance to mouse
+        const dx = mouse.current.x - p.x;
+        const dy = mouse.current.y - p.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Repulsion logic
+        if (distance < mouse.current.radius) {
+          const force = (mouse.current.radius - distance) / mouse.current.radius;
+          const angle = Math.atan2(dy, dx);
+          p.vx -= Math.cos(angle) * force * 15; // "explosion" strength
+          p.vy -= Math.sin(angle) * force * 15;
+        }
+
+        // Return to origin force
+        p.vx += (p.originX - p.x) * p.ease;
+        p.vy += (p.originY - p.y) * p.ease;
+
+        p.vx *= p.friction;
+        p.vy *= p.friction;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // Render particle
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, p.size, p.size);
+      }
+      animationId.current = requestAnimationFrame(animate);
+    };
+
+    initParticles();
+    animate();
+
+    const handleResize = () => {
+      cancelAnimationFrame(animationId.current);
+      initParticles();
+      animate();
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationId.current);
+    };
+  }, [text]);
+
+  const onMouseMove = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    mouse.current.x = e.clientX - rect.left;
+    mouse.current.y = e.clientY - rect.top;
+  };
+
+  const onMouseLeave = () => {
+    mouse.current.x = -1000;
+    mouse.current.y = -1000;
+  };
+
+  return (
+    <div ref={containerRef} className="relative w-full h-[200px] flex items-center justify-center">
+      <canvas
+        ref={canvasRef}
+        onMouseMove={onMouseMove}
+        onMouseLeave={onMouseLeave}
+        className="cursor-default"
+      />
+    </div>
+  );
+};
+
+// Ultra-premium particle-based hero heading
 const UltraHeroHeading = () => {
   return (
     <Motion.div 
-      initial={{ scale: 0.92 }}
-      animate={{ scale: 1.04 }}
-      transition={{ duration: 2.5, ease: "easeOut" }}
-      className="relative flex items-center justify-center font-black uppercase tracking-[0.05em] sm:tracking-[0.1em] mb-6 w-full text-center"
-      style={{ fontSize: "clamp(42px, 12vw, 110px)", fontWeight: 900, lineHeight: "1.1" }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1.5, ease: "easeOut" }}
+      className="relative flex items-center justify-center w-full min-h-[120px] sm:min-h-[200px]"
     >
-      <div 
-        className="text-transparent px-4 whitespace-normal sm:whitespace-nowrap z-0"
-        style={{ WebkitTextStroke: "1px rgba(255,255,255,0.18)" }}
-      >
-        SURYA PRATAP
-      </div>
-      
-      <Motion.div 
-        initial={{ clipPath: "inset(0 100% 0 0)", color: "#666666" }}
-        animate={{ clipPath: "inset(0 0% 0 0)", color: "#ffffff" }}
-        transition={{ 
-          clipPath: { duration: 1, delay: 0.9, ease: [0.76, 0, 0.24, 1] },
-          color: { duration: 1, delay: 1.9, ease: "easeOut" }
-        }}
-        className="absolute inset-0 z-10 flex items-center justify-center select-none px-4 whitespace-normal sm:whitespace-nowrap pointer-events-none"
-      >
-        SURYA PRATAP
-      </Motion.div>
+      <ParticleText text="SURYA PRATAP" />
     </Motion.div>
   );
 };
